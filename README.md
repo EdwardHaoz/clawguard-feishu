@@ -23,31 +23,162 @@ ClawGuard-Feishu is a **Zero-Trust Security Gateway** plugin for OpenClaw Feishu
 
 The plugin uses a unique **Wormhole Injection** mechanism to capture card button clicks without LLM token overhead:
 
-```
-Upstream monitor.account.ts
-        │
-        │ Injects: process.emit('clawguard_feishu_card_action', evt)
-        ▼
-┌───────────────────────────────────────┐
-│  Global Wormhole Listener             │
-│  process.on('clawguard_feishu_        │
-│    card_action', handler)             │
-└───────────────────────────────────────┘
-        │
-        ▼
-┌───────────────────────────────────────┐
-│  Approval Callback Handler            │
-│  - Validates admin identity           │
-│  - Updates card UI status             │
-│  - Resolves/rejects pending task      │
-└───────────────────────────────────────┘
+```mermaid
+graph TD
+    subgraph Upstream [OpenClaw Core / Core Channel Layer]
+        A["fa:fa-bolt Feishu Monitor<br/>(monitor.account.ts)"]
+        B{{"fa:fa-space-shuttle Wormhole Emit<br/>(Wormhole Event)"}}
+    end
+
+    subgraph Downstream [ClawGuard Plugin / Security Plugin Layer]
+        C["fa:fa-satellite-dish Global Listener<br/>(process.on)"]
+        D["fa:fa-user-shield Security Handler<br/>(Approval Callback)"]
+
+        E["fa:fa-id-badge Identity Verifier"]
+        F["fa:fa-sync UI Updater"]
+        G["fa:fa-check-circle Task Resolver"]
+    end
+
+    A -->|Hooked Event| B
+    B -.->|Zero-Token Bypass| C
+    C --> D
+    D --> E
+    D --> F
+    D --> G
+
+    style B fill:#f9f,stroke:#333,stroke-width:2px
+    style C fill:#00d1d1,stroke:#333,stroke-width:2px
+    style D fill:#ff9800,stroke:#333,stroke-width:2px
 ```
 
-> **Key Benefits:**
-> - Bypasses LLM token consumption entirely
-> - No context pollution in conversation history
-> - Real-time card status updates
-> - 3-minute approval timeout
+> **Wormhole Workflow Specification**
+> - [x] **Upstream Interception**: Intercept at the source by modifying `monitor.account.ts` before events reach LLM routing
+> - [x] **Event Tunneling**: Use Node.js global `process` object for cross-module signal transmission (0 Token overhead)
+> - [x] **Autonomous Handling**: Plugin layer listens for signals, executes identity verification, UI state PATCH, and final `resolve/reject`
+
+### D2 Industrial Architecture
+
+```d2
+direction: right
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme: 200
+  }
+}
+
+# Feishu Cloud Layer
+Feishu Cloud: {
+  shape: cloud
+  Label: "Feishu Cloud / 飞书云端"
+  style: {
+    fill: "#00D1D1"
+    stroke: "#00a8a8"
+    stroke-width: 3
+  }
+}
+
+# OpenClaw Core Runtime
+OpenClaw Core: {
+  Label: "OpenClaw Runtime\nOpenClaw 核心进程"
+  style: {
+    fill: "#1e1e2e"
+    stroke: "#cdd6f4"
+    stroke-dash: 5
+    stroke-width: 2
+  }
+
+  Monitor: {
+    Label: "Feishu Monitor\nmonitor.account.ts"
+    shape: hexagon
+    style: {
+      fill: "#f38ba8"
+      stroke: "#cba6f7"
+    }
+  }
+
+  Wormhole: {
+    Label: "Wormhole Pipeline\n虫洞事件发射器"
+    shape: hexagon
+    style: {
+      fill: "#6366f1"
+      stroke: "#4f46e5"
+      stroke-width: 3
+    }
+  }
+}
+
+# Security Plugin Zone
+ClawGuard Plugin: {
+  Label: "ClawGuard-Feishu / 安全插件隔离区"
+  style: {
+    fill: "#10b981"
+    stroke: "#059669"
+    stroke-width: 3
+  }
+
+  Listener: {
+    Label: "Global Listener\nprocess.on"
+    shape: rectangle
+    style: { fill: "#14b8a6" }
+  }
+
+  Handler: {
+    Label: "Security Handler\n审批回调处理器"
+    shape: shield
+    style: { fill: "#f59e0b" }
+  }
+
+  Verifier: "Identity Verifier"
+  Updater: "UI Updater"
+  Resolver: "Task Resolver"
+}
+
+# Connections
+Feishu Cloud -> OpenClaw Core.Monitor: "Card Action Click"
+OpenClaw Core.Monitor -> OpenClaw Core.Wormhole: "process.emit()"
+OpenClaw Core.Wormhole -> ClawGuard.Listener: "Zero-Token Bypass"
+ClawGuard.Listener -> ClawGuard.Handler
+ClawGuard.Handler -> ClawGuard.Verifier: "Verify Admin"
+ClawGuard.Handler -> ClawGuard.Updater: "PATCH UI"
+ClawGuard.Handler -> ClawGuard.Resolver: "resolve/reject"
+```
+
+> **Export to SVG**: Copy the D2 code above and paste it at [d2lang.com](https://d2lang.com) to generate a stunning vector diagram.
+
+![ClawGuard Architecture](./architecture.svg)
+
+### Console Dashboard View
+
+```plaintext
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  🛡️  ClawGuard-Feishu Architecture / 架构总览                              │
+├─────────────────────┬─────────────────────────────────┬───────────────────┤
+│  📡 FEISHU CLOUD    │  ⚡ OPENCLAW CORE               │  🛡️ PLUGIN ZONE   │
+├─────────────────────┼─────────────────────────────────┼───────────────────┤
+│                     │                                 │                   │
+│  ┌───────────────┐  │  ┌─────────────────────────┐   │  ┌─────────────┐  │
+│  │  Card Button  │──┼─▶│  monitor.account.ts     │───┼─▶│  Listener   │  │
+│  │  Click Event  │  │  │  [Hooked Interceptor]   │   │  │  (process)  │  │
+│  └───────────────┘  │  └───────────┬─────────────┘   │  └──────┬──────┘  │
+│                     │              │                  │         │         │
+│                     │              ▼                  │         ▼         │
+│                     │  ┌─────────────────────────┐   │  ┌─────────────┐  │
+│                     │  │  🌀 Wormhole Emit       │   │  │  🛡️ Handler │  │
+│                     │  │  process.emit()         │───┼─▶│  (Approval)  │  │
+│                     │  │  [Zero-Token Bypass]   │   │  └──────┬──────┘  │
+│                     │  └─────────────────────────┘   │         │         │
+│                     │                                 │    ┌─────┼─────┐   │
+│                     │                                 │    ▼     ▼     ▼   │
+│                     │                                 │  [✓]   [⟳]   [●]  │
+│                     │                                 │ Verify Update Resolve │
+└─────────────────────┴─────────────────────────────────┴───────────────────┘
+```
+
+> **Key Highlights:**
+> - `monitor.account.ts` - Kernel-level hook before LLM routing
+> - `Wormhole Emit` - Node.js process event bypass (0 token cost)
+> - `Security Handler` - Admin identity verification + UI patch + task resolution
 
 ## Features
 
@@ -180,31 +311,162 @@ ClawGuard-Feishu 是用于 OpenClaw 飞书生态的**零信任安全审批网关
 
 插件采用独特的**虫洞注入**机制捕获卡片按钮点击，完全避免 LLM Token 损耗：
 
-```
-上游 monitor.account.ts
-        │
-        │ 注入: process.emit('clawguard_feishu_card_action', evt)
-        ▼
-┌───────────────────────────────────────┐
-│  全局虫洞监听器                         ｜ 
-│  process.on('clawguard_feishu_        │
-│    card_action', handler)             │
-└───────────────────────────────────────┘
-        │
-        ▼
-┌───────────────────────────────────────┐
-│  审批回调处理器                         ｜
-│  - 验证管理员身份                       ｜
-│  - 更新卡片状态                         |
-│  - 解决/拒绝待处理任务                   |
-└───────────────────────────────────────┘
+```mermaid
+graph TD
+    subgraph Upstream [OpenClaw Core / 核心通道层]
+        A["fa:fa-bolt 飞书监控器<br/>(monitor.account.ts)"]
+        B{{"fa:fa-space-shuttle 虫洞发射<br/>(Wormhole Event)"}}
+    end
+
+    subgraph Downstream [ClawGuard Plugin / 安全插件层]
+        C["fa:fa-satellite-dish 全局监听器<br/>(process.on)"]
+        D["fa:fa-user-shield 安全处理器<br/>(审批回调)"]
+
+        E["fa:fa-id-badge 身份核验"]
+        F["fa:fa-sync 状态更新"]
+        G["fa:fa-check-circle 任务终结"]
+    end
+
+    A -->|Hooked Event| B
+    B -.->|零令牌绕过| C
+    C --> D
+    D --> E
+    D --> F
+    D --> G
+
+    style B fill:#f9f,stroke:#333,stroke-width:2px
+    style C fill:#00d1d1,stroke:#333,stroke-width:2px
+    style D fill:#ff9800,stroke:#333,stroke-width:2px
 ```
 
-> **核心优势：**
-> - 完全绕过 LLM Token 消耗
-> - 对话历史无上下文污染
-> - 实时卡片状态更新
-> - 3 分钟审批超时
+> **虫洞工作流规范**
+> - [x] **上游拦截**: 通过修改 `monitor.account.ts` 源码，在事件进入 LLM 路由前进行底层拦截
+> - [x] **事件隧道**: 使用 Node.js 全局 `process` 对象实现跨模块的信号传递（0 Token 损耗）
+> - [x] **自主处理**: 插件层监听到信号后，执行身份核验、UI 状态 PATCH 以及任务的最终 `resolve/reject`
+
+### D2 工业级架构
+
+```d2
+direction: right
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme: 200
+  }
+}
+
+# 飞书云端层
+飞书云端: {
+  shape: cloud
+  Label: "Feishu Cloud / 飞书云端"
+  style: {
+    fill: "#00D1D1"
+    stroke: "#00a8a8"
+    stroke-width: 3
+  }
+}
+
+# OpenClaw 核心运行时
+OpenClaw 核心: {
+  Label: "OpenClaw Runtime\nOpenClaw 核心进程"
+  style: {
+    fill: "#1e1e2e"
+    stroke: "#cdd6f4"
+    stroke-dash: 5
+    stroke-width: 2
+  }
+
+  监控器: {
+    Label: "Feishu Monitor\nmonitor.account.ts"
+    shape: hexagon
+    style: {
+      fill: "#f38ba8"
+      stroke: "#cba6f7"
+    }
+  }
+
+  虫洞: {
+    Label: "Wormhole Pipeline\n虫洞事件发射器"
+    shape: hexagon
+    style: {
+      fill: "#6366f1"
+      stroke: "#4f46e5"
+      stroke-width: 3
+    }
+  }
+}
+
+# 安全插件隔离区
+ClawGuard 插件: {
+  Label: "ClawGuard-Feishu / 安全插件隔离区"
+  style: {
+    fill: "#10b981"
+    stroke: "#059669"
+    stroke-width: 3
+  }
+
+  监听器: {
+    Label: "Global Listener\nprocess.on"
+    shape: rectangle
+    style: { fill: "#14b8a6" }
+  }
+
+  处理器: {
+    Label: "Security Handler\n审批回调处理器"
+    shape: shield
+    style: { fill: "#f59e0b" }
+  }
+
+  核验器: "Identity Verifier"
+  更新器: "UI Updater"
+  终结器: "Task Resolver"
+}
+
+# 连接关系
+飞书云端 -> OpenClaw 核心.监控器: "Card Action Click"
+OpenClaw 核心.监控器 -> OpenClaw 核心.虫洞: "process.emit()"
+OpenClaw 核心.虫洞 -> ClawGuard 插件.监听器: "零令牌绕过"
+ClawGuard 插件.监听器 -> ClawGuard 插件.处理器
+ClawGuard 插件.处理器 -> ClawGuard 插件.核验器: "验证管理员"
+ClawGuard 插件.处理器 -> ClawGuard 插件.更新器: "PATCH UI"
+ClawGuard 插件.处理器 -> ClawGuard 插件.终结器: "resolve/reject"
+```
+
+> **导出 SVG**: 将以上 D2 代码复制并粘贴到 [d2lang.com](https://d2lang.com) 可生成精美的矢量图。
+
+![ClawGuard 架构](./architecture.svg)
+
+### 控制台仪表盘视图
+
+```plaintext
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  🛡️  ClawGuard-Feishu 架构总览                                             │
+├─────────────────────┬─────────────────────────────────┬───────────────────┤
+│  📡 飞书云端         │  ⚡ OpenClaw 核心               │  🛡️ 插件隔离区    │
+├─────────────────────┼─────────────────────────────────┼───────────────────┤
+│                     │                                 │                   │
+│  ┌───────────────┐  │  ┌─────────────────────────┐   │  ┌─────────────┐  │
+│  │  卡片按钮     │──┼─▶│  monitor.account.ts    │───┼─▶│  监听器     │  │
+│  │  点击事件     │  │  │  [底层钩子拦截器]       │   │  │  (process)  │  │
+│  └───────────────┘  │  └───────────┬─────────────┘   │  └──────┬──────┘  │
+│                     │              │                  │         │         │
+│                     │              ▼                  │         ▼         │
+│                     │  ┌─────────────────────────┐   │  ┌─────────────┐  │
+│                     │  │  🌀 虫洞发射器         │   │  │  🛡️ 处理   │  │
+│                     │  │  process.emit()        │───┼─▶│  (审批回调)  │  │
+│                     │  │  [零令牌绕过]          │   │  └──────┬──────┘  │
+│                     │  └─────────────────────────┘   │         │         │
+│                     │                                 │    ┌─────┼─────┐   │
+│                     │                                 │    ▼     ▼     ▼   │
+│                     │                                 │  [✓]   [⟳]   [●]  │
+│                     │                                 │ 核验   更新   终结   │
+└─────────────────────┴─────────────────────────────────┴───────────────────┘
+```
+
+> **核心亮点:**
+> - `monitor.account.ts` - LLM 路由前的内核级钩子
+> - `虫洞发射器` - Node.js process 事件绕过（零 Token 损耗）
+> - `安全处理器` - 管理员身份核验 + UI 状态更新 + 任务终结
 
 ## 功能特性
 
