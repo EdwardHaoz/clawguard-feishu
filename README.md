@@ -30,16 +30,16 @@ Upstream monitor.account.ts
         ▼
 ┌───────────────────────────────────────┐
 │  Global Wormhole Listener             │
-│  process.on('clawguard_feishu_       │
+│  process.on('clawguard_feishu_        │
 │    card_action', handler)             │
 └───────────────────────────────────────┘
         │
         ▼
 ┌───────────────────────────────────────┐
 │  Approval Callback Handler            │
-│  - Validates admin identity          │
-│  - Updates card UI status            │
-│  - Resolves/rejects pending task    │
+│  - Validates admin identity           │
+│  - Updates card UI status             │
+│  - Resolves/rejects pending task      │
 └───────────────────────────────────────┘
 ```
 
@@ -186,17 +186,17 @@ ClawGuard-Feishu 是用于 OpenClaw 飞书生态的**零信任安全审批网关
         │ 注入: process.emit('clawguard_feishu_card_action', evt)
         ▼
 ┌───────────────────────────────────────┐
-│  全局虫洞监听器                        │
+│  全局虫洞监听器                         ｜ 
 │  process.on('clawguard_feishu_        │
 │    card_action', handler)             │
 └───────────────────────────────────────┘
         │
         ▼
 ┌───────────────────────────────────────┐
-│  审批回调处理器                        │
-│  - 验证管理员身份                      │
-│  - 更新卡片状态                        │
-│  - 解决/拒绝待处理任务                 │
+│  审批回调处理器                         ｜
+│  - 验证管理员身份                       ｜
+│  - 更新卡片状态                         |
+│  - 解决/拒绝待处理任务                   |
 └───────────────────────────────────────┘
 ```
 
