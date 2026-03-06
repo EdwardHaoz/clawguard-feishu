@@ -2,6 +2,11 @@
 
 Feishu Zero-Trust Security Approval Gateway for OpenClaw
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![OpenClaw Plugin](https://img.shields.io/badge/OpenClaw-Plugin-orange.svg?style=for-the-badge&logo=dependabot)](https://github.com/openclaw/openclaw)
+[![Feishu Channel](https://img.shields.io/badge/Channel-Feishu-00D1D1.svg?style=for-the-badge&logo=lark)](https://open.feishu.cn/)
+[![Zero Trust](https://img.shields.io/badge/Security-Zero_Trust-red.svg?style=for-the-badge&logo=security)](https://github.com/EdwardHaoz/clawguard-feishu)
+
 [English](#english) | [中文](#chinese)
 
 ---
@@ -32,17 +37,17 @@ Upstream monitor.account.ts
         ▼
 ┌───────────────────────────────────────┐
 │  Approval Callback Handler            │
-│  - Validates admin identity           │
-│  - Updates card UI status             │
-│  - Resolves/rejects pending task     │
+│  - Validates admin identity          │
+│  - Updates card UI status            │
+│  - Resolves/rejects pending task    │
 └───────────────────────────────────────┘
 ```
 
-**Key Benefits:**
-- Bypasses LLM token consumption entirely
-- No context pollution in conversation history
-- Real-time card status updates
-- 3-minute approval timeout
+> **Key Benefits:**
+> - Bypasses LLM token consumption entirely
+> - No context pollution in conversation history
+> - Real-time card status updates
+> - 3-minute approval timeout
 
 ## Features
 
@@ -195,11 +200,11 @@ ClawGuard-Feishu 是用于 OpenClaw 飞书生态的**零信任安全审批网关
 └───────────────────────────────────────┘
 ```
 
-**核心优势：**
-- 完全绕过 LLM Token 消耗
-- 对话历史无上下文污染
-- 实时卡片状态更新
-- 3 分钟审批超时
+> **核心优势：**
+> - 完全绕过 LLM Token 消耗
+> - 对话历史无上下文污染
+> - 实时卡片状态更新
+> - 3 分钟审批超时
 
 ## 功能特性
 
