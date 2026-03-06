@@ -2,6 +2,11 @@
 
 Feishu Zero-Trust Security Approval Gateway for OpenClaw
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![OpenClaw Plugin](https://img.shields.io/badge/OpenClaw-Plugin-orange.svg?style=for-the-badge&logo=dependabot)](https://github.com/openclaw/openclaw)
+[![Feishu Channel](https://img.shields.io/badge/Channel-Feishu-00D1D1.svg?style=for-the-badge&logo=lark)](https://open.feishu.cn/)
+[![Zero Trust](https://img.shields.io/badge/Security-Zero_Trust-red.svg?style=for-the-badge&logo=security)](https://github.com/{your_username}/clawguard-feishu)
+
 [English](#english) | [中文](#chinese)
 
 ---
@@ -13,8 +18,6 @@ Feishu Zero-Trust Security Approval Gateway for OpenClaw
 ClawGuard-Feishu is a **Zero-Trust Security Gateway** plugin for OpenClaw Feishu channels. It intercepts tool calls from non-admin users (Guests) and enforces admin approval through interactive Feishu cards before execution.
 
 ## Architecture
-
-### Wormhole Engine Grid
 
 | Layer | Component | Mechanism | Impact |
 | :--- | :--- | :--- | :--- |
@@ -153,6 +156,11 @@ MIT
 
 飞书零信任安全审批网关 for OpenClaw
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![OpenClaw Plugin](https://img.shields.io/badge/OpenClaw-Plugin-orange.svg?style=for-the-badge&logo=dependabot)](https://github.com/openclaw/openclaw)
+[![Feishu Channel](https://img.shields.io/badge/Channel-Feishu-00D1D1.svg?style=for-the-badge&logo=lark)](https://open.feishu.cn/)
+[![Zero Trust](https://img.shields.io/badge/Security-Zero_Trust-red.svg?style=for-the-badge&logo=security)](https://github.com/{your_username}/clawguard-feishu)
+
 [English](#english) | [中文](#chinese)
 
 ---
@@ -162,8 +170,6 @@ MIT
 ClawGuard-Feishu 是用于 OpenClaw 飞书生态的**零信任安全审批网关**插件。它在工具调用执行前拦截非管理员用户（Guest）的请求，并通过交互式飞书卡片强制要求管理员审批。
 
 ## 核心架构
-
-### 虫洞引擎架构图 (Wormhole Engine Grid)
 
 | 层级 | 组件 | 机制 | 影响 |
 | :--- | :--- | :--- | :--- |
