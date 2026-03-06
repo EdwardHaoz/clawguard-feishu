@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    /* 基本选项 */
+    "target": "ES2020",                          /* 指定 ECMAScript 目标版本: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2020', or 'ESNEXT'. */
+    "module": "commonjs",                       /* 指定模块化方式: 'commonjs', 'amd', 'system', 'umd' or 'es2015'. */
+    "lib": ["ES2020"],                          /* 指定要包含在编译中的库文件. */
+    "outDir": "./dist",                         /* 输出目录 */
+    "rootDir": "./src",                        /* 源代码根目录 */
+
+    /* 严格类型检查选项 */
+    "strict": true,                           /* 启用所有严格类型检查选项. */
+    "noImplicitAny": true,                   /* 在具有隐含 'any' 类型的表达式和声明上引发错误. */
+    "strictNullChecks": true,                /* 启用严格的 null 检查. */
+    "noImplicitThis": true,                  /* 在带有 'this' 类型的表达式上引发错误. */
+    "alwaysStrict": true,                     /* 以严格模式解析并为每个文件发出 'use strict' 语句. */
+
+    /* 模块解析选项 */
+    "moduleResolution": "node",               /* 指定模块解析策略: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */
+    "esModuleInterop": true,                  /* 启用所有模块之间的互操作性. */
+    "resolveJsonModule": true,                /* 允许从 '.json' 导入. */
+
+    /* 额外检查 */
+    "noUnusedLocals": true,                   /* 未使用的本地变量报错. */
+    "noUnusedParameters": true,               /* 未使用的参数报错. */
+    "noImplicitReturns": true,                 /* 缺少返回语句报错. */
+    "noFallthroughCasesInSwitch": true,       /* switch 语句落入 break 报错. */
+
+    /* 高级选项 */
+    "skipLibCheck": true,                     /* 跳过库检查. */
+    "forceConsistentCasingInFileNames": true  /* 强制文件名大小写一致. */
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
